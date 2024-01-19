@@ -13,21 +13,26 @@ namespace WallpaperProfiler {
   /// </summary>
   public partial class App : Application {
 
-    private Forms.NotifyIcon _notifyIcon;
+    private Forms.NotifyIcon notifyIcon;
     private MainWindow mainWindow = null;
+    private Forms.ToolStripMenuItem profilesItem = null;
 
     public App() {
-      _notifyIcon = new Forms.NotifyIcon();
-      _notifyIcon.MouseClick += NotifyIcon_Click;
-      //_notifyIcon.Icon = WallpaperProfiler.Properties.Resources.AppIcon;
-      _notifyIcon.Visible = true;
-      _notifyIcon.Text = "Wallpaper Profiler";
-      _notifyIcon.ContextMenuStrip = new Forms.ContextMenuStrip();
-      _notifyIcon.ContextMenuStrip.Items.Add("Show", null, ShowItem_Click);
-      _notifyIcon.ContextMenuStrip.Items.Add("Exit", null, ExitItem_Click);
+      profilesItem = new Forms.ToolStripMenuItem("Profiles...", WallpaperProfiler.Properties.Resources.users);
+
+      notifyIcon = new Forms.NotifyIcon();
+      notifyIcon.MouseDoubleClick += NotifyIcon_DoubleClick;
+      notifyIcon.Icon = WallpaperProfiler.Properties.Resources.icon_small;
+      notifyIcon.Visible = true;
+      notifyIcon.Text = "Wallpaper Profiler";
+      notifyIcon.ContextMenuStrip = new Forms.ContextMenuStrip();
+      notifyIcon.ContextMenuStrip.Items.Add("Show", WallpaperProfiler.Properties.Resources.application_blue, ShowItem_Click);
+      notifyIcon.ContextMenuStrip.Items.Add(profilesItem);
+      notifyIcon.ContextMenuStrip.Items.Add(new Forms.ToolStripSeparator());
+      notifyIcon.ContextMenuStrip.Items.Add("Exit", WallpaperProfiler.Properties.Resources.cross, ExitItem_Click);
     }
 
-    private void NotifyIcon_Click(object sender, Forms.MouseEventArgs e) {
+    private void NotifyIcon_DoubleClick(object sender, Forms.MouseEventArgs e) {
       if (e.Button == Forms.MouseButtons.Left) {
         ShowWindow();
       }
@@ -47,6 +52,9 @@ namespace WallpaperProfiler {
         mainWindow.Closed += MainWindow_Closed;
       }
       mainWindow.Show();
+      if (mainWindow.WindowState == WindowState.Minimized) {
+        mainWindow.WindowState = WindowState.Normal;
+      }
       mainWindow.Activate();
     }
 
@@ -55,14 +63,14 @@ namespace WallpaperProfiler {
     }
 
     protected override void OnStartup(StartupEventArgs e) {
-      _notifyIcon.Visible = true;
+      notifyIcon.Visible = true;
       base.OnStartup(e);
     }
 
     protected override void OnExit(ExitEventArgs e) {
-      _notifyIcon.Visible = false;
-      _notifyIcon.Dispose();
-      _notifyIcon = null;
+      notifyIcon.Visible = false;
+      notifyIcon.Dispose();
+      notifyIcon = null;
       base.OnExit(e);
     }
 
